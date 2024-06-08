@@ -117,15 +117,30 @@ function applyHighlight() {
 
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
+
   const range = selection.getRangeAt(0);
+
+  // Check if the range contains only text nodes
+  const containsOnlyText = range.cloneContents().querySelectorAll(':not(text)').length === 0;
+
+  if (!containsOnlyText) {
+    console.error("Error: Range contains non-text nodes.");
+    return;
+  }
+
   const highlightSpan = document.createElement('span');
   highlightSpan.style.backgroundColor = selectedColor;
-  range.surroundContents(highlightSpan);
-  selection.removeAllRanges();
 
-  // Store the highlight information for undo purposes
-  const parentXPath = generateXPath(range.commonAncestorContainer);
-  drawingRecords.push({ tool: 'text-highlighter', color: selectedColor, parentXPath, html: highlightSpan.outerHTML });
+  try {
+    range.surroundContents(highlightSpan);
+    selection.removeAllRanges();
+
+    // Store the highlight information for undo purposes
+    const parentXPath = generateXPath(range.commonAncestorContainer);
+    drawingRecords.push({ tool: 'text-highlighter', color: selectedColor, parentXPath, html: highlightSpan.outerHTML });
+  } catch (error) {
+    console.error("Error applying highlight:", error);
+  }
 }
 
 function generateXPath(element) {
@@ -200,11 +215,3 @@ function loadDrawings() {
     }
   });
 }
-
-
-
-
-
-
-
-
