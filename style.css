@@ -5,8 +5,8 @@ body {
 .pen-btn, .highlight-btn, .note-btn, .undo-btn, .save-btn, .color-button {
     border-radius: 20px;
     border-width: 1.2px;
-    width: 40px; 
-    height: 40px;
+    width: 30px; 
+    height: 30px;
     margin: 6px 6px;
     border-style: solid;
     cursor: pointer;
