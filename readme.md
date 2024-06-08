@@ -1,4 +1,6 @@
-OVERVIEW
+OVERVIEW:
+
+
 The Web Annotator Extension is a Chrome extension designed to enable users to annotate web pages. Users can draw with a pen, highlight text, add notes, undo actions, and save their drawings. The extension consists of a popup interface where users can select tools and interact with the webpage to make annotations.
 
 
@@ -48,4 +50,7 @@ Icons are crucial for representing the extension in the Chrome Web Store and in 
 
 
 
-This is how it works-
+These are some images below for reference:-
+![How it looks like](<annotator reference 1.PNG>)
+![How it works](image-1.png)
+
