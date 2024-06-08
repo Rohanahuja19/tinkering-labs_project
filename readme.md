@@ -50,7 +50,4 @@ Icons are crucial for representing the extension in the Chrome Web Store and in 
 
 
 
-These are some images below for reference:-
-![How it looks like](<annotator reference 1.PNG>)
-![How it works](image-1.png)
 
