@@ -27,33 +27,11 @@ function activatePen() {
   }
 }
 
-function deleteCanvasElement() {
-  if (canvasElement) {   
-    canvasElement.parentNode.removeChild(canvasElement);
-    canvasElement.removeEventListener('mousedown', startDrawing);
-    canvasElement.removeEventListener('mousemove', draw);
-    canvasElement.removeEventListener('mouseup', stopDrawing);
-    canvasElement.removeEventListener('mouseout', stopDrawing);
-    canvasElement = null;
-    canvasContext = null;
-    drawingRecords = [];
-  }
-}
-
 function activateHighlighter() {
   deleteCanvasElement();
   activeTool = 'text-highlighter';
   document.addEventListener('mouseup', applyHighlight);
 }
-
-
-
-function addNote() {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: "add-note" });
-  });
-}
-
 
 function createCanvasElement() {
   canvasElement = document.createElement('canvas');
@@ -65,23 +43,22 @@ function createCanvasElement() {
   document.body.appendChild(canvasElement);
   canvasContext = canvasElement.getContext('2d');
 
-  canvasElement.addEventListener('mousedown', startDrawing);
-  canvasElement.addEventListener('mousemove', draw);
-  canvasElement.addEventListener('mouseup', stopDrawing);
-  canvasElement.addEventListener('mouseout', stopDrawing);
+  canvasElement.addEventListener('mousedown', initiateDrawing);
+  canvasElement.addEventListener('mousemove', drawOnCanvas);
+  canvasElement.addEventListener('mouseup', endDrawing);
+  canvasElement.addEventListener('mouseout', endDrawing);
 
   loadDrawings();
 }
 
-function startDrawing(e) {
+function initiateDrawing(e) {
   if (activeTool !== 'pen') return;
   isDrawingActive = true;
   startX = e.clientX;
   startY = e.clientY;
-  currentPath = [{ x: startX, y: startY }];
 }
 
-function draw(e) {
+function drawOnCanvas(e) {
   if (!isDrawingActive) return;
 
   canvasContext.strokeStyle = selectedColor;
@@ -98,15 +75,11 @@ function draw(e) {
 
   startX = e.clientX;
   startY = e.clientY;
-  currentPath.push({ x: startX, y: startY });
 }
 
-function stopDrawing() {
+function endDrawing() {
   if (!isDrawingActive) return;
   isDrawingActive = false;
-  if (currentPath.length > 1) {
-    drawingRecords.push({ tool: activeTool, color: selectedColor, path: currentPath });
-  }
 }
 
 function saveDrawings() {
@@ -142,9 +115,6 @@ function redrawCanvas() {
         canvasContext.moveTo(drawing.startX, drawing.startY);
         canvasContext.lineTo(drawing.endX, drawing.endY);
         canvasContext.stroke();
-      } else if (drawing.tool === 'text-highlighter') {
-        canvasContext.fillStyle = drawing.color;
-        canvasContext.fillRect(drawing.rect.left, drawing.rect.top, drawing.rect.width, drawing.rect.height);
       }
     });
   }
@@ -157,43 +127,19 @@ function applyHighlight() {
     const range = selection.getRangeAt(0);
     const span = document.createElement('span');
     span.style.backgroundColor = selectedColor;
-    span.id = 'highlight-' + new Date().getTime();
     span.appendChild(range.extractContents());
     range.insertNode(span);
 
     selection.removeAllRanges();
 
-    drawingRecords.push({ tool: 'text-highlighter', html: span.outerHTML, parentXPath: getXPath(span.parentNode), id: span.id });
-  }
-}
-
-function getXPath(element) {
-  if (element.id !== '') return 'id("' + element.id + '")';
-  if (element === document.body) return element.tagName;
-  let index = 0;
-  const siblings = element.parentNode.childNodes;
-  for (let i = 0; i < siblings.length; i++) {
-    const sibling = siblings[i];
-    if (sibling === element) return getXPath(element.parentNode) + '/' + element.tagName + '[' + (index + 1) + ']';
-    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) index++;
+    drawingRecords.push({ tool: 'text-highlighter', html: span.outerHTML });
   }
 }
 
 function undoLastAction() {
   if (drawingRecords.length > 0) {
-    const lastDrawing = drawingRecords.pop();
-    undoHistory.push(lastDrawing);
+    drawingRecords.pop();
     redrawCanvas();
-    if (lastDrawing.tool === 'text-highlighter') {
-      const parent = document.evaluate(lastDrawing.parentXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-      if (parent) {
-        const spans = parent.querySelectorAll(`span[id="${lastDrawing.id}"]`);
-        spans.forEach(span => {
-          const text = document.createTextNode(span.textContent);
-          span.parentNode.replaceChild(text, span);
-        });
-      }
-    }
   }
 }
 
