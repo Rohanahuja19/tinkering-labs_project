@@ -48,6 +48,6 @@ If your extension has a browser action or page action that displays a popup when
 
 Icons are crucial for representing the extension in the Chrome Web Store and in the browser toolbar. The manifest file specifies various icon sizes for different use cases. Additionally, you may include other assets such as images or CSS files for styling your extension's UI.
 
-
+![This is how it looks like](<project image.jpg>)
 
 
