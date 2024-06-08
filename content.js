@@ -46,6 +46,15 @@ function activateHighlighter() {
   document.addEventListener('mouseup', applyHighlight);
 }
 
+
+
+function addNote() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { action: "add-note" });
+  });
+}
+
+
 function createCanvasElement() {
   canvasElement = document.createElement('canvas');
   canvasElement.style.position = 'absolute';

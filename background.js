@@ -4,6 +4,14 @@ chrome.runtime.onInstalled.addListener(() => {
   
   // Listener for messages from other parts of the extension (e.g., content scripts or popup)
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === "add-note") {
+        // Code to add a note on the webpage
+      }
+    });
+    
+    
+    
     if (message.action === "storeData") {
       // Attempt to save notes and highlights to local storage
       try {
