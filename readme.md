@@ -50,6 +50,6 @@ Icons are crucial for representing the extension in the Chrome Web Store and in 
 
 I am attaching an image hereby to see how it looks like...
 
-![This is how it looks like](<project image.jpg>)
+![This is how it looks like](<temp.jpg>)
 
 
