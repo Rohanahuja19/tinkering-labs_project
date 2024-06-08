@@ -14,7 +14,8 @@ body {
 }
 
 .color-button {
-    display: none;
+    width: 30px;
+    height: 30px;
 }
 
 .button-container {
